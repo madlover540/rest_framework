@@ -128,6 +128,64 @@ class Cbv_pk(APIView):
         Custmer = self.get_object(pk)
         Custmer.delete()
         return Response (status=status.HTTP_404_NOT_FOUND)
+    
+   # mixin 
+class mixins_list(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
+
+class mixins_pk(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+    def get(self, request, pk):
+        return self.retrieve(request)
+
+    def put(self, request, pk):
+        return self.update(request)
+    def delete(self, request, pk):
+        return self.destroy(request)
+
+
+#generics
+
+class generics_list(generics.ListCreateAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+class generics_pk(generics.RetrieveUpdateDestroyAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+
+#viewsets
+class viewsets_customer(viewsets.ModelViewSet):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+
+
+class viewsets_saloon(viewsets.ModelViewSet):
+    queryset =Saloon.objects.all()
+    serializer_class = Saloon_Serializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['saloon_name']
+
+class viewsets_Reserve(viewsets.ModelViewSet):
+    queryset =Reserve.objects.all()
+    serializer_class = Reserve_Serializer
+        
+
+
+
+
+    
         
 
 
