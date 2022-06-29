@@ -1,13 +1,17 @@
 from ast import Delete
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
-from reseve import serializers
+from reseve.serializers import Saloon_Serializer, Reserve_Serializer, Customer_Serializer
 from reseve.models import Custmer, Reserve, Saloon
 from rest_framework.decorators import api_view
 from reseve.serializers import Customer_Serializer,Reserve_Serializer,Saloon_Serializer
 from rest_framework import status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework import mixins, generics, viewsets
+
+
 
 
 # Create your views here.
@@ -128,6 +132,59 @@ class Cbv_pk(APIView):
         Custmer = self.get_object(pk)
         Custmer.delete()
         return Response (status=status.HTTP_404_NOT_FOUND)
+
+
+# mixin 
+class mixins_list(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
+
+class mixins_pk(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+    def get(self, request, pk):
+        return self.retrieve(request)
+
+    def put(self, request, pk):
+        return self.update(request)
+    def delete(self, request, pk):
+        return self.destroy(request)
+
+
+#generics
+
+class generics_list(generics.ListCreateAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+class generics_pk(generics.RetrieveUpdateDestroyAPIView):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+
+#viewsets
+class viewsets_customer(viewsets.ModelViewSet):
+    queryset =Custmer.objects.all()
+    serializer_class = Customer_Serializer
+
+
+
+class viewsets_saloon(viewsets.ModelViewSet):
+    queryset =Saloon.objects.all()
+    serializer_class = Saloon_Serializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['saloon_name']
+
+class viewsets_Reserve(viewsets.ModelViewSet):
+    queryset =Reserve.objects.all()
+    serializer_class = Reserve_Serializer
         
 
 
